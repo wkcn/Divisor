@@ -7,8 +7,8 @@
 using namespace std;
 
 typedef int DType;
-const unsigned int DTYPE_X = 10000;
-const unsigned int DTYPE_X_LEN = 4;
+const DType DTYPE_X = 10000;
+const int DTYPE_X_LEN = 4;
 
 class UBigInt{
 public:

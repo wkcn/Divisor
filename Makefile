@@ -1,7 +1,7 @@
 TARGET := test
 
 CXX := g++
-CFLAGS := -Wreturn-type -DCALCULATE_MODE=1 -DPLATFORM=1 -g -std=c++11 -Iinc
+CFLAGS := -Wreturn-type -g -std=c++11 -Iinc
 
 LDFLAGS := -pthread
 

@@ -1,5 +1,6 @@
 #include "UBigInt.h"
 #include <iostream>
+#include <cassert>
 using namespace std;
 
 int main(){
@@ -12,6 +13,7 @@ int main(){
 		cout << "a - b = " << a - b << endl;
 		cout << "a * b = " << a * b << endl;
 		cout << "a / b = " << a / b << endl;
+		cout << "a % b = " << a % b << endl;
 	}
 	return 0;
 }

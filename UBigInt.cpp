@@ -38,6 +38,7 @@ UBigInt::UBigInt(const char *s){
 	int slen = strlen(s);
 	DType base = 1; // 基数
 	DType buf = 0; // 缓存 
+	int buf_size = 0;
 	UBIGINT_READ_STATE state = UBIGINT_READ_STATE::START;
 	// 可以接受字符串:"      123      "
 	for (int i = slen - 1;i >= 0;--i){
@@ -59,11 +60,13 @@ UBigInt::UBigInt(const char *s){
 				// READING
 				DType k = c - '0';
 				buf += k * base; 
-				if (base == DTYPE_X){
+				++buf_size;
+				if (buf_size == DTYPE_X_LEN){
 					// 缓存已满
 					base = 1;
 					datas.push_back(buf);
 					buf = 0;
+					buf_size = 0;
 				}else{
 					base *= 10;
 				}
@@ -240,37 +243,36 @@ UBigInt& UBigIntDivide(UBigInt &a, const UBigInt &b, bool mod){
 			}
 		}
 	}
+
 	// a的位数大于等于b的位数
-	vector<int> res;	// 结果缓存
-	int notZero = a.datas.size() - 1;// a被减后的非零位
-	int qlen = a.datas.size() - b.datas.size();// for中的继续条件中的变量是时刻更新的
+	vector<DType> res(a.datas.size(), 0);	// 结果缓存
+	int notZero = int(a.datas.size()) - 1;// a被减后的非零位
+	int qlen = int(a.datas.size()) - int(b.datas.size());// for中的继续条件中的变量是时刻更新的
 	for (int q = 0; q <= qlen; ++q){
 		//q代表将除数靠左后向右移动的格数
-		int delta = a.datas.size() - b.datas.size() - q;//相对位置偏差
+		int delta = int(a.datas.size()) - int(b.datas.size()) - q;//相对位置偏差
 
 		//用二分取商的某位的最大值(由于是万进制(DTYPE_X = 10000)，所以hi取DTYPE_X)
-		int j = b.datas.size() - 1 + delta;	//当前a被对齐的最高位
+		int j = int(b.datas.size()) - 1 + delta;	//当前a被对齐的最高位
 
-		int big = 0;
-		int base = 1;
+		DType big = 0;
+		DType base = 1;
 		for (int u = j; u <= notZero; ++u){
 			big += a.datas[u] * base;
 			base *= DTYPE_X;
 		}
 
-		int lo = big / (b.datas[b.datas.size() -1] + 1), hi = big / (b.datas[b.datas.size() - 1]) + 1;// [lo,hi)
-		//int lo = 0, hi = DTYPE_X;
+		DType lo = big / (b.datas[b.datas.size() -1] + 1), hi = big / (b.datas[b.datas.size() - 1]) + 1;// [lo,hi)
 		UBigInt temp;	// 将要减去的偏移数
 		// 这里的二分法原理是，首先估计出temp的上下界，再用二分法求出temp
 		while (lo < hi){
-			int mi = lo + ((hi - lo) >> 1);
+			DType mi = lo + ((hi - lo) >> 1);
 			temp = b * mi;
 			bool isLarge = false; //过大
-			if (temp.datas.size() - 1 + delta < notZero){
+			if (int(temp.datas.size()) - 1 + delta < notZero){
 				isLarge = false; // 对齐后a还是比temp多一位
 			}else{
-
-				for (int i = temp.datas.size() - 1; i >= 0; --i){
+				for (int i = int(temp.datas.size()) - 1; i >= 0; --i){
 					if (temp.datas[i] > a.datas[i + delta]){
 						isLarge = true;
 						break;
@@ -280,6 +282,7 @@ UBigInt& UBigIntDivide(UBigInt &a, const UBigInt &b, bool mod){
 				}
 
 			}
+			isLarge ? hi = mi : lo = mi + 1;
 		}
 		//--lo为所求
 		res[delta] = --lo;
