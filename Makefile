@@ -3,7 +3,7 @@ TARGET := test
 CXX := g++
 CFLAGS := -Wreturn-type -O3 -g -std=c++11 -Iinc
 
-LDFLAGS := -pthread
+LDFLAGS := -pthread -fopenmp
 
 SRCS := $(wildcard *.cpp)
 OBJS := $(patsubst %cpp,%o,$(SRCS))  

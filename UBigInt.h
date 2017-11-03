@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <cstdlib>
+#include <cstdio>
 using namespace std;
 
 typedef long long DType;
@@ -55,11 +56,11 @@ public:
 
 public:
 	friend ostream& operator<<(ostream &, const UBigInt &);
-	friend ostream& operator<<(ostream &, const UBigInt &&);
 	friend istream& operator>>(istream &, UBigInt &);
 
 public:
 	void random(const UBigInt &n);
+	void print();
 
 private:
 	void del_pre_zero();

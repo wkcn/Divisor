@@ -4,6 +4,9 @@
 #include <vector>
 #include <cstring>
 #include <map>
+#include <set>
+#include <ctime>
+#include <algorithm>
 using namespace std;
 
 #include "UBigInt.h"
@@ -108,10 +111,10 @@ bool PollardBrent(const UBigInt &n, UBigInt &d){
 		do{
 			FuncG(x, n);
 			FuncG(y, n);FuncG(y, n);
-			UBigInt w = (x >= y ? x - y : y - x);
+			if (x == y)break;
+			UBigInt w = (x > y ? x - y : y - x);
 			d = gcd(w, n);
 			if (d > 1)return true;
-			// cout << x << ", " << y << endl;
 		}while(x != y);
 	}
 	return false;
@@ -148,6 +151,7 @@ void Factor(UBigInt &x, map<UBigInt, int> &primes){
 }
 
 int main(){
+	clock_t start_time = clock();
 	vector<UBigInt> small_primes_table;
 	init_small_primes_table(small_primes_table);
 	UBigInt n;
@@ -160,8 +164,45 @@ int main(){
 		if (ti)primes[p] += ti;
 	}
 	Factor(n, primes);
+
+#if 0
+	cout << "===============" << endl;
 	for (auto it = primes.begin();it != primes.end();++it){
 		cout << it->first << "^" << it->second << endl;
+	}
+	cout << "===============" << endl;
+#endif
+
+	// remove 1
+	primes.erase(UBigInt(1));
+
+	int s = 1; 
+	for (auto it = primes.begin();it != primes.end();++it){
+		s += s * it->second;
+	}
+	vector<UBigInt> all(s);
+	all[0] = 1;
+	int ns = 1;
+	for (auto it = primes.begin();it != primes.end();++it){
+		const UBigInt &x = it->first;
+		int time = it->second;
+		int b = ns;
+		UBigInt base = 1;
+		for (int t = 0;t < time;++t){
+			base *= x;
+			for (int i = 0;i < ns;++i){
+				all[b++] = all[i] * base; 
+			}
+		}
+		ns = b;
+	}
+	sort(all.begin(), all.end());
+
+	clock_t end_time = clock();
+	printf("%d ms\n", (int(end_time) - int(start_time)) * 1000 / CLOCKS_PER_SEC);
+	for (UBigInt &u : all){
+		u.print();
+		putchar('\n');
 	}
 	return 0;
 }

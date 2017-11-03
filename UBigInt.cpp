@@ -365,16 +365,6 @@ UBigInt operator%(const UBigInt &a, const UBigInt &b){
 }
 
 //IO流
-ostream& operator<<(ostream &os,const UBigInt &&u){
-	os.fill('0');
-	os << u.datas[u.datas.size() - 1];
-	for (int i = u.datas.size() - 2; i >= 0; i--){
-		os << setw(DTYPE_X_LEN) << u.datas[i];
-	}
-	os.fill();
-	return os;
-}
-
 ostream& operator<<(ostream &os,const UBigInt &u){
 	//我记得C++ IO流还有一种很简单的补零方法，现在找不到了
 	os.fill('0');
@@ -423,4 +413,31 @@ void UBigInt::del_pre_zero(){
 	int len = datas.size();
 	while (datas[len - 1] == 0 && len > 1)--len;
 	datas.resize(len);
+}
+
+inline void print3(DType x){
+	printf("%.03lld ", x / 1000000);
+	printf("%.03lld ", (x / 1000) % 1000);
+	printf("%.03lld", x % 1000);
+}
+
+inline void print3head(DType x){
+	DType x1 = x / 1000000;
+	DType x2 = (x / 1000) % 1000;
+	DType x3 = x % 1000;
+	if (x1){
+		printf("%lld %.03lld %.03lld", x1, x2, x3);
+	}else if(x2){
+		printf("%lld %.03lld", x2, x3);
+	}else{
+		printf("%lld", x3);
+	}
+}
+
+void UBigInt::print(){
+	print3head(datas[datas.size() - 1]);
+	for (int i = datas.size() - 2;i >= 0;--i){
+		putchar(' ');
+		print3(datas[i]);
+	}
 }
