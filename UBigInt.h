@@ -6,9 +6,9 @@
 #include <string>
 using namespace std;
 
-typedef int DType;
-const DType DTYPE_X = 10000;
-const int DTYPE_X_LEN = 4;
+typedef long long DType;
+const DType DTYPE_X = 1e9;
+const int DTYPE_X_LEN = 9;
 
 class UBigInt{
 public:

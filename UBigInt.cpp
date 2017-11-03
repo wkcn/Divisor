@@ -85,9 +85,9 @@ UBigInt::UBigInt(const char *s){
 
 //比较类
 int UBigIntCmp(const UBigInt &a,const UBigInt &b){
-	if (a.datas.size() != b.datas.size())return a.datas.size() - b.datas.size();
-	for (int i = a.datas.size() - 1; i >= 0; --i){
-		if (a.datas[i] != b.datas[i])return a.datas[i] - b.datas[i];
+	if (a.datas.size() != b.datas.size())return int(a.datas.size()) - int(b.datas.size());
+	for (int i = int(a.datas.size()) - 1; i >= 0; --i){
+		if (a.datas[i] != b.datas[i])return a.datas[i] > b.datas[i] ? 1 : -1;
 	}
 	return 0;
 }
@@ -162,15 +162,15 @@ UBigInt& operator-=(UBigInt &a, const UBigInt &b){
 		throw runtime_error("无符号整数减法a-b中,a不能比b小");
 	}
 	for (int i = 0; i < b.datas.size(); ++i){
-		a.datas[i] -= b.datas[i];
-		if (a.datas[i] < 0){
-			//向高位借位
+		if (a.datas[i] < b.datas[i]){
+			// 需要向高位借位
 			if (i + 1 >= a.datas.size()){
 				throw runtime_error("无符号整数a-b中，a不能比b小");
 			}
 			--a.datas[i + 1]; // 借位
 			a.datas[i] += DTYPE_X;
 		}
+		a.datas[i] -= b.datas[i];
 	}
 
 	// 更新长度, 去掉前面的0
