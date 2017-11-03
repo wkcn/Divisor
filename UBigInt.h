@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <cstdlib>
 using namespace std;
 
 typedef long long DType;
@@ -46,14 +47,27 @@ public:
 	friend bool operator<=(const UBigInt&, const UBigInt&);
 	friend bool operator>(const UBigInt&, const UBigInt&);
 	friend bool operator>=(const UBigInt&, const UBigInt&);
+	
+	// 位运算
+	friend DType operator&(const UBigInt&, const DType);
+	friend DType operator|(const UBigInt&, const DType);
+	friend DType operator^(const UBigInt&, const DType);
 
 public:
-	friend ostream& operator<<(ostream &,UBigInt &);
-	friend ostream& operator<<(ostream &,UBigInt &&);
+	friend ostream& operator<<(ostream &, const UBigInt &);
+	friend ostream& operator<<(ostream &, const UBigInt &&);
 	friend istream& operator>>(istream &, UBigInt &);
+
+public:
+	void random(const UBigInt &n);
+
+private:
+	void del_pre_zero();
 
 protected:
 	vector<DType> datas; // 使用DTYPE_X进制记录大数
 };
+
+void get_ubigint_random(UBigInt &x, const UBigInt &n);
 
 #endif

@@ -216,12 +216,14 @@ UBigInt& UBigIntDivide(UBigInt &a, const UBigInt &b, bool mod){
 	// mod 是否去模 %
 	// 使用二分法判断除数某位
 	// a的位数小于b的位数的情况（必有a<b）
-	if (a.datas.size() < b.datas.size()){
+	// if (a.datas.size() < b.datas.size()){
+	if (a < b){
 		// a确实小于b的情况
 		if (mod){
 			return a;
 		}else{
-			a.datas.resize(1, 1);
+			a.datas.clear();
+			a.datas.resize(1, 0);
 			return a;
 		}
 	}
@@ -238,6 +240,7 @@ UBigInt& UBigIntDivide(UBigInt &a, const UBigInt &b, bool mod){
 			}else{
 				// a % b, b == 1
 				// so, a = 0
+				a.datas.clear();
 				a.datas.resize(1, 0);
 				return a;
 			}
@@ -362,7 +365,7 @@ UBigInt operator%(const UBigInt &a, const UBigInt &b){
 }
 
 //IO流
-ostream& operator<<(ostream &os, UBigInt &&u){
+ostream& operator<<(ostream &os,const UBigInt &&u){
 	os.fill('0');
 	os << u.datas[u.datas.size() - 1];
 	for (int i = u.datas.size() - 2; i >= 0; i--){
@@ -372,7 +375,7 @@ ostream& operator<<(ostream &os, UBigInt &&u){
 	return os;
 }
 
-ostream& operator<<(ostream &os, UBigInt &u){
+ostream& operator<<(ostream &os,const UBigInt &u){
 	//我记得C++ IO流还有一种很简单的补零方法，现在找不到了
 	os.fill('0');
 	os << u.datas[u.datas.size() - 1];
@@ -388,4 +391,36 @@ istream& operator>>(istream &is, UBigInt &u){
 	is >> s;
 	u = UBigInt(s.c_str());
 	return is;
+}
+
+DType operator&(const UBigInt &a, const DType i){
+	return a.datas[0] & i;
+}
+
+DType operator|(const UBigInt &a, const DType i){
+	return a.datas[0] | i;
+}
+
+DType operator^(const UBigInt &a, const DType i){
+	return a.datas[0] ^ i;
+}
+
+void UBigInt::random(const UBigInt &n){
+	// [0, n]
+	datas.resize(n.datas.size());
+	bool big = true;
+	for (int i = datas.size() - 1;i >= 0;--i){
+		if (big){
+			datas[i] = rand() % (n.datas[i] + 1);
+			if (datas[i] < n.datas[i])big = false;
+		}
+		else datas[i] = rand() % DTYPE_X; 
+	}
+	del_pre_zero();
+}
+
+void UBigInt::del_pre_zero(){
+	int len = datas.size();
+	while (datas[len - 1] == 0 && len > 1)--len;
+	datas.resize(len);
 }
